@@ -37,3 +37,64 @@ import plotly.express as px
 df = pd.read_csv("visualizacao_de_vendas/dados_vendas_dashboard.csv")
 
 print(df.head())
+
+# Resumo Geral
+
+resumo_geral = df.groupby("Data_Venda").sum(numeric_only=True).reset_index()
+
+fig1 = px.line(
+    resumo_geral,
+    x="Data_Venda",
+    y="Quantidade",
+    title="Resumo Geral: Vendas ao Longo do Tempo",
+    labels={'Quantidade': 'Quantidade vendida', 'Data_venda': 'Data'}
+)
+fig1.show()
+
+# 2 vendas Por Produto: qtd total por prod
+vendas_por_produto = df.groupby("Produto").sum(numeric_only=True).reset_index()
+
+fig2 = px.bar(
+    vendas_por_produto,
+    x="Produto",
+    y="Quantidade",
+    color="Produto",
+    title="Vendas Por Produto"
+)
+
+fig2.show()
+
+# 3 Distribuicao regional
+vendas_por_regiao = df.groupby("Região").sum(numeric_only=True).reset_index()
+
+fig3 = px.pie(
+    vendas_por_regiao,
+    names="Região",
+    values="Quantidade",
+    title="Distribuição Regional"
+)
+
+fig3.show()
+
+# 4 Relação entre categorias de produtos e regiões
+heatmap_data = df.pivot_table(index="Região", columns="Categoria", values="Quantidade", aggfunc="sum").fillna(0)
+
+fig4 = px.imshow(
+    heatmap_data,
+    title="Relação entre Categorias e Regiões"
+)
+
+fig4.show()
+
+# 5 Acompanhamento de produtos populares
+produtos_populares = df.groupby(['Data_Venda', 'Produto']).sum(numeric_only=True).reset_index()
+
+fig5 = px.line(
+    produtos_populares,
+    x="Data_Venda",
+    y="Quantidade",
+    color="Produto",
+    title="Acompanhamento de Produtos Populares"
+)
+
+fig5.show()
